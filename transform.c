@@ -1,28 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int main(int argc, char* argv[])
+
+
+int main()
 {
-
-	char *buffer;
+	char buffer[1024];
+	char *b = buffer;
+	char stuck[1024];
+	char *s = stuck;
 	size_t bufsize = 1024;
 	size_t characters;
-
-	buffer = (char *)malloc(bufsize * sizeof(char));
+	char input[1024];	
+	char * tokenized;
+	//read from standard input	
+	do
+	{
+		characters = getline(&b, &bufsize, stdin);
+		if(strcmp(buffer,stuck) != 0) 
+			strcat(input, b);
+		strcpy(stuck, buffer);
+	} while(!feof(stdin));
 	
-	//input: an empty line containing just space
-	if (argc == 1)
-	{
-		while(!feof(stdin)){
-		characters = getline(&buffer, &bufsize, stdin);
-		printf("You typed: '%s'\n", buffer);
-		}
-	}
-	//input: a list of tokens
-	else 
-	{
-		printf("You are in the wrong place");	
-	}
-		
+//	tokenized = strtok(input, " \n");
+	printf("new string: '%s'\n", input);
+	
 	return 0;    
 }
