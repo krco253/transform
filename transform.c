@@ -23,8 +23,12 @@ int main()
 		strcpy(stuck, buffer);
 	} while(!feof(stdin));
 	
-//	tokenized = strtok(input, " \n");
-	printf("new string: '%s'\n", input);
-	
+	tokenized = strtok(input, " ,\n");
+	while(tokenized != NULL)
+	{
+		printf("%s ", tokenized);
+		tokenized = strtok(NULL, " ,\n");
+	}
+
 	return 0;    
 }
