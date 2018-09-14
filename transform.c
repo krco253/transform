@@ -1,42 +1,104 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h> //isdigit()
 
-bool is_hex(char *item)
+/*
+int is_number_string(const char *item)
 {
-//TODO Write function to determine if a string is hex num
+	while(*item)
+	{
+		if ((isdigit(*item++) == 0))
+			return 0;
+	}
+	return 1;
 }
 
-bool is_decimal(char *item)
+int is_hex(char *item)
 {
-//TODO write function to determine if string is decimal num
+	char *compare = "0x";
+	if ((item[0] == compare[0]) && (item[1] == compare[1]))
+		return 1;
+	else return 0;
+	
 }
 
-int to_int_array(char user_input[], long to_int[])
+int is_decimal(char *item)
+{
+	int only_num = is_number_string(item);
+	if (only_num ==0)
+		return 0;
+	else return 1;
+}
+*/
+int to_int_array(char user_input[], char to_int[])
 {
 	int index = 0;
+	long temp;
+	char temp_char;
 	char *tokenized;
 	char *pointer;
+	char *error = "Error";
 	tokenized = strtok(user_input, " ,\n");
-
+	
 	while(tokenized != NULL)
 	{
-		tokenized = strtok(NULL, " ,\n");
-		if(is_hex(tokenized))
-			to_int[index] = strtlo(tokenized, &pointer, 16);
-		else if(is_decimal(tokenized))
-			to_int[index] = strtlo(tokenized, &pointer, 10);
-		else
-			return -1;
+		int length = strlen(tokenized);
+		char substring[length];
+		strncpy(substring, tokenized, sizeof(tokenized));
+	
+		if(atoi(substring) != 0)
+		{
+			temp = strtol(tokenized, &pointer, 10);	
+			temp_char = (char) temp;
+			to_int[index] = temp_char;	
+		}
+		else if(isxdigit(substring[0]) != 0)
+		{
+			temp = strtol(tokenized, &pointer, 16);
+			temp_char = (char) temp;
+			to_int[index] = temp_char;
 			
+		}
+		else
+			return 0;
+	
+//		printf("%s ", tokenized);
+		tokenized = strtok(NULL, " ,\n");
 		index++;
 	}
 
+	return 1;
 }
 
-void int_to_char(long int_array[], char char_array[])
+/*void int_to_char(long int_array[], char char_array[])
 {
 //TODO write function to convert from int array to char array
+	int index = 0;
+	int int_array_size;
+	int_array_size = *(&int_array + 1) - int_array;
+
+	for (int i = 0; i < int_array_size; i++)
+	{
+		char char_temp;
+		long int_temp = int_array[index];
+		char_temp = (char) int_temp;
+		char_array[index] = char_temp;
+		index++;
+	}
+
+
+}*/
+
+void print_char_array(char char_array[])
+{
+	int index = 0;
+
+	while (index < strlen(char_array))
+	{
+		printf("%c ", char_array[index]);
+		index++;
+	}
 }
 
 int main()
@@ -50,8 +112,9 @@ int main()
 	size_t characters;
 	char input[1024];	
 	char * tokenized;
-	long char_to_int[3000];
-	char final[3000];
+	char char_to_int[10000];
+	char *err = "Error";
+	char *checker;
 	/*read from standard input*/	
 	do
 	{
@@ -62,12 +125,16 @@ int main()
 	} while(!feof(stdin));
 	
 	function_success = to_int_array(input, char_to_int);
-	if (function_sucess == -1)
+	if (function_success == 0)
 	{
-		print("Invalid format!\n");
+		printf("Error: Invalid format!\n");
+		return 0;
 	}
-	
-	int_to_char(char_to_int, final);
+
+	print_char_array(char_to_int);	
+/*	int_to_char(char_to_int, final);*/
+
+//	printf("%s ", char_to_int);
 /*	
 	tokenized = strtok(input, " ,\n");
 	int index = 0;
