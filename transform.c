@@ -31,7 +31,7 @@ int is_decimal(char *item)
 	else return 1;
 }
 */
-int to_int_array(char user_input[], char to_int[])
+void to_int_array(char user_input[], char to_int[])
 {
 	int index = 0;
 	long temp;
@@ -46,7 +46,7 @@ int to_int_array(char user_input[], char to_int[])
 		int length = strlen(tokenized);
 		char substring[length];
 		strncpy(substring, tokenized, sizeof(tokenized));
-	
+		
 		if(atoi(substring) != 0)
 		{
 			temp = strtol(tokenized, &pointer, 10);	
@@ -60,15 +60,12 @@ int to_int_array(char user_input[], char to_int[])
 			to_int[index] = temp_char;
 			
 		}
-		else
-			return 0;
+		else {} 
 	
 //		printf("%s ", tokenized);
 		tokenized = strtok(NULL, " ,\n");
 		index++;
 	}
-
-	return 1;
 }
 
 /*void int_to_char(long int_array[], char char_array[])
@@ -112,7 +109,6 @@ int main()
 	size_t characters;
 	char input[1024];	
 	char * tokenized;
-	char char_to_int[10000];
 	char *err = "Error";
 	char *checker;
 	/*read from standard input*/	
@@ -124,12 +120,10 @@ int main()
 		strcpy(stuck, buffer);
 	} while(!feof(stdin));
 	
-	function_success = to_int_array(input, char_to_int);
-	if (function_success == 0)
-	{
-		printf("Error: Invalid format!\n");
-		return 0;
-	}
+	int in_len = strlen(b);
+	char char_to_int[in_len];
+	
+	to_int_array(input, char_to_int);
 
 	print_char_array(char_to_int);	
 /*	int_to_char(char_to_int, final);*/
