@@ -1,116 +1,100 @@
+/*-----------------------------------------------------
+|		       transform.c
+|------------------------------------------------------
+|
+| Compile with: gcc -o transform transform.c
+|
+| Author: Kelsey Cole
+|
+| Description: take in decimal and hexadecimal numbers
+| from standard input, convert to ASCII characters and
+| output to the standard output
+-------------------------------------------------------*/
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h> //isdigit()
+#include <string.h> /*strtol(), strncpy, strncmp, etc*/
+#include <ctype.h> /*isdigit()*/
 
-/*
-int is_number_string(const char *item)
-{
-	while(*item)
-	{
-		if ((isdigit(*item++) == 0))
-			return 0;
-	}
-	return 1;
-}
 
-int is_hex(char *item)
-{
-	char *compare = "0x";
-	if ((item[0] == compare[0]) && (item[1] == compare[1]))
-		return 1;
-	else return 0;
-	
-}
+/*------------------------------------------------------
+|                    process_input
+|-------------------------------------------------------
+| inputs: user_input (a char array of user input)
+|  	  to_int (a char array to store converted input)
+| outputs: to_int (array with proccessed user input)
+|           prints processed user input to the std output
+---------------------------------------------------------*/ 	
 
-int is_decimal(char *item)
+void process_input(char user_input[], char to_int[])
 {
-	int only_num = is_number_string(item);
-	if (only_num ==0)
-		return 0;
-	else return 1;
-}
-*/
-void to_int_array(char user_input[], char to_int[])
-{
-	int index = 0;
+	int index = 0; /*for tracking position in char array to_int*/
 	long temp;
 	char temp_char;
 	char *tokenized;
 	char *pointer;
-	char *error = "Error";
+
+	/*Tokenize the user input*/
 	tokenized = strtok(user_input, " ,\n");
-	
-	while(tokenized != NULL)
+	int flag = 1; /*for tracking the beginning and end of comments*/
+	size_t sizet_one = 1;
+
+	while(tokenized != NULL) /*traverse the tokenization*/
 	{
 		int length = strlen(tokenized);
-		char substring[length];
-		strncpy(substring, tokenized, sizeof(tokenized));
-		
-		if(atoi(substring) != 0)
+		char substring[length]; 
+		strncpy(substring, tokenized, sizeof(tokenized)); /*make a copy of the token
+								  so it can be used by isdigit*/		
+		if (flag == 1) /*if the flag is not set to indicate a comment*/
 		{
-			temp = strtol(tokenized, &pointer, 10);	
-			temp_char = (char) temp;
-			to_int[index] = temp_char;	
+			if(atoi(substring) != 0) /*if the substring is a decimal*/
+			{
+				temp = strtol(tokenized, &pointer, 10);	/*convert to a long*/
+				temp_char = (char) temp; /*cast to a character*/
+				to_int[index] = temp_char; /*store to to_int*/	
+				printf("%c", to_int[index]); /*print to std output*/
+			}
+			else if(isxdigit(substring[0]) != 0) /*if the substring is a hexadecimal*/
+			{
+				temp = strtol(tokenized, &pointer, 16); /*convert to long*/
+				temp_char = (char) temp; /*cast to a character*/
+				to_int[index] = temp_char; /*store to to_int*/
+				printf("%c", to_int[index]); /*print to std output*/	 
+			}
+			else if(strncmp(substring, "/", sizet_one) == 0) /*if the substring is the beginning
+										of a comment*/
+			{	
+				flag = 0; /*set flag to indicate to a comment*/
+			}
+			else /*else this substring is invalid*/
+			{
+				printf(" Error! < %s > ", tokenized); 
+			}
 		}
-		else if(isxdigit(substring[0]) != 0)
+		else if (flag == 0) /*if the comment flag is set*/
 		{
-			temp = strtol(tokenized, &pointer, 16);
-			temp_char = (char) temp;
-			to_int[index] = temp_char;
-			
+			if(strpbrk(substring, "*/") != NULL) /*if this is the end of the comment*/
+				flag = 1; /*set the flag back*/
 		}
-		else {} 
 	
-//		printf("%s ", tokenized);
-		tokenized = strtok(NULL, " ,\n");
+		tokenized = strtok(NULL, " ,\n"); /*go to the next token*/
+
 		index++;
 	}
 }
-
-/*void int_to_char(long int_array[], char char_array[])
-{
-//TODO write function to convert from int array to char array
-	int index = 0;
-	int int_array_size;
-	int_array_size = *(&int_array + 1) - int_array;
-
-	for (int i = 0; i < int_array_size; i++)
-	{
-		char char_temp;
-		long int_temp = int_array[index];
-		char_temp = (char) int_temp;
-		char_array[index] = char_temp;
-		index++;
-	}
-
-
-}*/
-
-void print_char_array(char char_array[])
-{
-	int index = 0;
-
-	while (index < strlen(char_array))
-	{
-		printf("%c ", char_array[index]);
-		index++;
-	}
-}
-
+/*----------------------------------------
+|                  main                   
+-----------------------------------------*/ 
 int main()
 {
 	char buffer[1024];
 	char *b = buffer;
 	char stuck[1024];
 	char *s = stuck;
-	int function_success = 0;
 	size_t bufsize = 1024;
 	size_t characters;
 	char input[1024];	
-	char * tokenized;
-	char *err = "Error";
-	char *checker;
+
 	/*read from standard input*/	
 	do
 	{
@@ -120,27 +104,12 @@ int main()
 		strcpy(stuck, buffer);
 	} while(!feof(stdin));
 	
-	int in_len = strlen(b);
-	char char_to_int[in_len];
+	/*create array to store processed input*/	
+	char char_to_int[100000];
 	
-	to_int_array(input, char_to_int);
+	/*process input and print to std output*/
+	process_input(input, char_to_int);
 
-	print_char_array(char_to_int);	
-/*	int_to_char(char_to_int, final);*/
 
-//	printf("%s ", char_to_int);
-/*	
-	tokenized = strtok(input, " ,\n");
-	int index = 0;
-
-	while(tokenized != NULL)
-	{
-		printf("%s ", tokenized);
-		tokenized = strtok(NULL, " ,\n");
-		char_to_int[index] = atoi(tokenized);
-		index++;
-	}
-*/
-	
 	return 0;    
 }
